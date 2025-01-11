@@ -30,9 +30,9 @@ class PDFTranslator:
     def translate_text(self, text):
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4",
+                model="chatgpt-4o-latest",
                 messages=[
-                    {"role": "system", "content": "You are a professional translator. Translate the following text to English, maintaining the original formatting as much as possible."},
+                    {"role": "system", "content": "You are a professional translator. Translate the following file to Enlgish, maintaining the original formatting as much as possible."},
                     {"role": "user", "content": text}
                 ],
                 temperature=0.3
@@ -86,7 +86,7 @@ def main():
     # Load environment variables from .env file
     load_dotenv()
     
-    parser = argparse.ArgumentParser(description='Translate PDF documents using OpenAI GPT-4')
+    parser = argparse.ArgumentParser(description='Translate PDF documents using OpenAI GPT-4o')
     parser.add_argument('input_file', help='Path to the input PDF file')
     parser.add_argument('output_file', help='Path for the translated PDF file')
     parser.add_argument('--api-key', help='OpenAI API key', default=os.getenv('OPENAI_API_KEY'))
