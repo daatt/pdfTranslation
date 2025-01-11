@@ -5,6 +5,10 @@ from openai import OpenAI
 import tempfile
 import time
 from dotenv import load_dotenv
+from pdf2image import convert_from_path
+import io
+from PIL import Image
+import base64
 
 class PDFTranslator:
     def __init__(self, api_key):
@@ -25,32 +29,67 @@ class PDFTranslator:
                 print("Please enter valid numbers.")
 
     def extract_text_from_page(self, page):
-        return page.extract_text()
-
-    def translate_text(self, text):
+        # Convert page to image and get text via vision API
         try:
             response = self.client.chat.completions.create(
                 model="chatgpt-4o-latest",
                 messages=[
-                    {"role": "system", "content": "You are a professional translator. Translate the following file to Enlgish, maintaining the original formatting as much as possible."},
-                    {"role": "user", "content": text}
+                    {
+                        "role": "system",
+                        "content": "You are a professional translator. Translate the following file to English, maintaining the original formatting as much as possible. This file may contain lots of tables and numbers. If it does please also translate any labels or annotations to English also, preserving the table structure as much as you can. Output in markdown and use advanced markdown formatting when you need to to achieve your goal."
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "image",
+                                "image_url": {
+                                    "url": f"data:image/jpeg;base64,{self._convert_page_to_base64(page)}"
+                                }
+                            }
+                        ]
+                    }
                 ],
-                temperature=0.3
+                max_tokens=4096
             )
             return response.choices[0].message.content
         except Exception as e:
-            print(f"Translation error: {e}")
+            print(f"Error processing page image: {e}")
             return None
+
+    def _convert_page_to_base64(self, page):
+        # Convert PDF page to image
+        temp_path = tempfile.mktemp(suffix='.pdf')
+        writer = PdfWriter()
+        writer.add_page(page)
+        with open(temp_path, 'wb') as temp_file:
+            writer.write(temp_file)
+        
+        # Convert to image
+        images = convert_from_path(temp_path)
+        image = images[0]  # Get first (and only) page
+        
+        # Convert to base64
+        buffered = io.BytesIO()
+        image.save(buffered, format="JPEG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+        
+        # Clean up
+        os.remove(temp_path)
+        
+        return img_str
 
     def process_pdf(self, input_path, output_path):
         # Read the PDF
         reader = PdfReader(input_path)
-        writer = PdfWriter()
         
         # Get page range from user
         start_page, end_page = self.get_page_range(len(reader.pages))
         
         print("\nStarting translation process...")
+        
+        # Create markdown content
+        markdown_content = f"# Translated Document\nOriginal file: {input_path}\n\n"
         
         # Process each page in the range
         for i in range(start_page, end_page):
@@ -60,15 +99,9 @@ class PDFTranslator:
             page = reader.pages[i]
             text = self.extract_text_from_page(page)
             
-            # Translate the text
-            translated_text = self.translate_text(text)
-            
-            if translated_text:
-                # Create a new PDF page with translated text
-                # Note: This is a simplified version - in a real implementation,
-                # you'd want to preserve the original formatting
-                writer.add_page(page)  # For now, just adding original page
-                
+            if text:
+                # Add page number and translated text to markdown
+                markdown_content += f"## Page {i + 1}\n\n{text}\n\n"
                 print(f"Page {i + 1} translated successfully")
             else:
                 print(f"Failed to translate page {i + 1}")
@@ -76,9 +109,10 @@ class PDFTranslator:
             # Add a small delay to avoid API rate limits
             time.sleep(1)
         
-        # Save the translated PDF
-        with open(output_path, 'wb') as output_file:
-            writer.write(output_file)
+        # Save the translated text as markdown
+        output_path = output_path.rsplit('.', 1)[0] + '.md'  # Change extension to .md
+        with open(output_path, 'w', encoding='utf-8') as output_file:
+            output_file.write(markdown_content)
         
         print(f"\nTranslation completed. Output saved to: {output_path}")
 
