@@ -1,15 +1,27 @@
-A python script to break up and translate a long PDF file. 
+## Dependencies
 
-#Features
-1. Import a PDF file
-2. Ask the user what page range they want to translate
-3. Break up the PDF file of that page range into smaller chunks of 1 page each
-4. Send the smaller chunks in PDF format to the OpenAI API for translation using the GPT-4o model and a custom prompt
-5. Receive the translated chunks
-6. Combine the translated chunks into a single PDF file
-7. Save the translated PDF file
+- `PyPDF2`: PDF file handling
+- `openai`: OpenAI API interface
+- `python-dotenv`: Environment variable management
+- `pdf2image`: PDF to image conversion
+- `Pillow`: Image processing
 
+## Limitations
 
-#Tech Stack
-1. Python
-2. OpenAI 4o API
+- Requires GPT-4V API access
+- Processing time depends on the number of pages and API response time
+- API rate limits may apply
+- Image quality may affect translation accuracy
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+[Add your chosen license here]
+
+## Acknowledgments
+
+- OpenAI for providing the GPT-4V API
+- The open-source community for the various Python libraries used in this project
