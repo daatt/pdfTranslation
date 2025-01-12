@@ -1,6 +1,6 @@
 # PDF Translator
 
-A Python-based tool that translates PDF documents to English using OpenAI's GPT-4V (formerly GPT-4 Vision) API. The tool preserves formatting, including tables and numerical data, and outputs the translation in Markdown format.
+A Python-based tool that translates PDF documents to English using OpenAI's GPT-4o. The tool preserves formatting, including tables and numerical data, and outputs the translation in Markdown format.
 
 ## Features
 
