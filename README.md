@@ -35,6 +35,8 @@ The program will:
 2. Process each page and translate it to English
 3. Save the output as a Markdown file (with the same name as your output file but with .md extension)
 
+Note: parrallelTranslate.py is an alternative script to translate the pdf, it uses multiple threads to translate the pdf in parallel.
+
 
 ## Dependencies
 
