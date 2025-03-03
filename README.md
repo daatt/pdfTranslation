@@ -1,61 +1,75 @@
 # PDF Translator
 
-A Python-based tool that translates PDF documents to English using OpenAI's GPT-4o. The tool preserves formatting, including tables and numerical data, and outputs the translation in Markdown format.
+A Python tool that translates PDF documents from any language to English using OpenAI's GPT-4o vision capabilities. The translator preserves formatting, tables, and numerical data while outputting clean Markdown.
 
 ## Features
 
-- Translates PDF documents to English
-- Preserves original formatting using Markdown
-- Handles tables and numerical data
-- Allows selection of specific page ranges for translation
-- Supports all languages that GPT-4V can process
+- Translates PDFs from any language to English
+- Preserves original document formatting with Markdown
+- Handles complex elements like tables and numerical data
+- Allows translation of specific page ranges
+- Offers both sequential and parallel translation options
 
-## Prerequisites
+## Requirements
 
-- Python 3.6 or higher
-- OpenAI API key with GPT-4V access
-- Poppler (required for pdf2image)
+- Python 3.6+
+- OpenAI API key with GPT-4o access
+- Poppler (for pdf2image library)
 
 ## Installation
 
 1. Clone the repository:
-2. Install the required Python package
+   ```
+   git clone https://github.com/yourusername/pdf-translator.git
+   cd pdf-translator
+   ```
+
+2. Install required packages:
+   ```
+   pip install -r requirements.txt
+   ```
+
 3. Set up your OpenAI API key:
    - Create a `.env` file in the project directory
    - Add your API key: `OPENAI_API_KEY=your_api_key_here`
 
 ## Usage
 
-Run the script from the command line:
+### Basic Translation
 
+```
 python translate_pdf.py input.pdf output.pdf
+```
+
+### Parallel Translation (Faster)
+
+```
+python parallelTranslate.py input.pdf output.pdf --max-workers 5
+```
 
 The program will:
-1. Ask you to specify the page range you want to translate
-2. Process each page and translate it to English
-3. Save the output as a Markdown file (with the same name as your output file but with .md extension)
+1. Ask you to specify the page range to translate
+2. Process and translate each page to English
+3. Save the output as a Markdown file
 
-Note: parrallelTranslate.py is an alternative script to translate the pdf, it uses multiple threads to translate the pdf in parallel.
+## How It Works
 
+1. Converts PDF pages to high-quality images
+2. Sends each image to OpenAI's GPT-4o for translation
+3. Uses the vision capabilities of GPT-4o to understand content and formatting
+4. Preserves structure by converting to Markdown format
+5. Combines all translated pages into a single document
 
-## Dependencies
+## Performance
 
-- `PyPDF2`: PDF file handling
-- `openai`: OpenAI API interface
-- `python-dotenv`: Environment variable management
-- `pdf2image`: PDF to image conversion
-- `Pillow`: Image processing
+The `parallelTranslate.py` script provides significantly faster processing by translating multiple pages simultaneously. You can adjust the number of worker threads with the `--max-workers` parameter based on your needs and API rate limits.
 
 ## Limitations
 
-- Requires GPT-4V API access
-- Processing time depends on the number of pages and API response time
-- API rate limits may apply
-- Image quality may affect translation accuracy
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+- Requires GPT-4o API access
+- Processing speed depends on document complexity and API response time
+- API rate limits and costs may apply
+- Image quality affects translation accuracy
 
 ## License
 
@@ -63,5 +77,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Acknowledgments
 
-- OpenAI for providing the GPT-4V API
-- The open-source community for the various Python libraries used in this project
+- OpenAI for providing the GPT-4o API
+- The open-source Python community
